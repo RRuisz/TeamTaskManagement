@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TeamRole {
+  admin
+  member
+  viewer
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique
+  password_hash   String
+  firstName       String
+  lastName        String
+  createdAt       DateTime          @default(now())
+  Team_membership Team_membership[]
+  Comment         Comment[]
+  assignedTasks   Task[]            @relation("AssignedUser")
+  createdTasks    Task[]            @relation("ReportingUser")
+}
+
+model Team {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  description     String
+  createdAt       DateTime          @default(now())
+  Team_membership Team_membership[]
+  Task            Task[]
+}
+
+model Team_membership {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  team_id   Int
+  team      Team     @relation(fields: [team_id], references: [id])
+  role      TeamRole
+  joined_at DateTime @default(now())
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  team_id     Int
+  team        Team       @relation(fields: [team_id], references: [id])
+  title       String
+  description String
+  status      TaskStatus
+  due_date    DateTime?
+  assigned_to Int
+  user1       User       @relation(name: "AssignedUser", fields: [assigned_to], references: [id])
+  created_by  Int
+  user2       User       @relation(name: "ReportingUser", fields: [created_by], references: [id])
+  created_at  DateTime   @default(now())
+  Comment     Comment[]
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  task_id    Int
+  task       Task     @relation(fields: [task_id], references: [id])
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id])
+  content    String
+  created_at DateTime @default(now())
+}
