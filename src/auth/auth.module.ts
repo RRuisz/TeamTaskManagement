@@ -11,5 +11,6 @@ import {UserModule} from "../user/user.module";
   imports: [PrismaModule, JwtModule.register({}), UserModule],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [AuthService, JwtStrategy]
 })
 export class AuthModule {}

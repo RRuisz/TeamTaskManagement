@@ -1,9 +1,8 @@
-import {ForbiddenException, Injectable} from "@nestjs/common";
+import {ForbiddenException, Injectable, NotFoundException} from "@nestjs/common";
 import {PrismaService} from "../prisma/prisma.service";
 import {UserDto} from "./dto";
 import * as argon from 'argon2';
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime/library";
-import {User} from "@prisma/client";
 
 
 @Injectable()
@@ -38,14 +37,14 @@ export class UserService {
                 email: data.email
             }
         })
-        if (!user) throw new ForbiddenException('User not found!')
+        if (!user) throw new NotFoundException('User not found')
 
         const verify = await argon.verify(user.password_hash, data.password)
 
         if (verify) {
             return user;
         } else {
-            throw new ForbiddenException('Credentials Wrong!')
+            throw new NotFoundException('User not found')
         }
     }
 
