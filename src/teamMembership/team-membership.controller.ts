@@ -1,10 +1,10 @@
-import {Body, Controller, Delete, Param, Patch, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, UseGuards} from '@nestjs/common';
 import {JwtGuard} from "../auth/guard";
 import {TeamJoinUserDto, UserRoleUpdateDto} from "./dto";
 import {TeamAdminGuard} from "../auth/guard/admin.guard";
 import {TeamMembershipService} from "./team-membership.service";
 
-@Controller('teams/:teamId/users')
+@Controller('teams/:teamId/member')
 export class TeamMembershipController {
 
     constructor(private readonly membershipService: TeamMembershipService) {
@@ -12,20 +12,26 @@ export class TeamMembershipController {
 
     @UseGuards(JwtGuard, TeamAdminGuard)
     @Post('')
-    updateTeam(@Body() body: TeamJoinUserDto, @Param('teamId') teamId: string) {
+    async updateTeam(@Body() body: TeamJoinUserDto, @Param('teamId') teamId: string) {
         return this.membershipService.addTeamUser(body, parseInt(teamId))
     }
 
     @UseGuards(JwtGuard, TeamAdminGuard)
     @Delete(':userId')
-    removeUserFromTeam(@Param('teamId') teamId: string, @Param('userId') userId: string) {
+    async removeUserFromTeam(@Param('teamId') teamId: string, @Param('userId') userId: string) {
         return this.membershipService.removeUserFromTeam(parseInt(teamId), parseInt(userId))
     }
 
     @UseGuards(JwtGuard, TeamAdminGuard)
     @Patch(':userId')
-    updateUserRole(@Param('teamId') teamId: string, @Param('userId') userId: string, @Body() body: UserRoleUpdateDto) {
+    async updateUserRole(@Param('teamId') teamId: string, @Param('userId') userId: string, @Body() body: UserRoleUpdateDto) {
         this.membershipService.updateUserRole(parseInt(teamId), parseInt(userId), body.role)
+    }
+
+    @UseGuards(JwtGuard, TeamAdminGuard)
+    @Get()
+    async getTeamMembers(@Param('teamId') teamId: string) {
+        return this.membershipService.getTeamMembers(parseInt(teamId))
     }
 }
 

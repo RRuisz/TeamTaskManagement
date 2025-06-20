@@ -124,4 +124,23 @@ export class TeamMembershipService {
         return "User role successfully updated!"
     }
 
+    async getTeamMembers(teamId: number) {
+        const memberships = await this.prisma.team_membership.findMany({
+            where: {
+                team_id: teamId
+            }, include: {
+                user: true
+            }
+        })
+
+        return memberships.map(m => ({
+            id: m.user.id,
+            email: m.user.email,
+            firstName: m.user.firstName,
+            lastName: m.user.lastName,
+            role: m.role,
+            joinedAt: m.joined_at,
+        }));
+    }
+
 }
