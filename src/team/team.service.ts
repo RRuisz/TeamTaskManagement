@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
 
 @Injectable()
@@ -21,23 +21,38 @@ export class TeamService {
 
         if (!user) throw new Error('User not found')
 
-        await this.prisma.team_membership.create({
-            data: {
-                team: {
-                    connect: {
-                        id: team.id
-                    }
-                },
-                user: {
-                    connect: {
-                        id: user.id
-                    }
-                },
-                role: "admin"
-            }
-        })
+        try {
+            await this.prisma.team_membership.create({
+                data: {
+                    team: {
+                        connect: {
+                            id: team.id
+                        }
+                    },
+                    user: {
+                        connect: {
+                            id: user.id
+                        }
+                    },
+                    role: "admin"
+                }
+            })
 
-        return team;
+            return team;
+        } catch (e) {
+            return new BadRequestException("Something went wrong!")
+        }
+    }
+
+    async updateTeamStatus(teamId: number, status: boolean) {
+        return this.prisma.team.update({
+            where: {
+                id: teamId
+            },
+            data: {
+                archived_at: status ? new Date() : null
+            }
+        });
     }
 
 }

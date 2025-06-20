@@ -46,6 +46,7 @@ model Team {
   createdAt       DateTime          @default(now())
   Team_membership Team_membership[]
   Task            Task[]
+  archived_at     DateTime?
 }
 
 model Team_membership {

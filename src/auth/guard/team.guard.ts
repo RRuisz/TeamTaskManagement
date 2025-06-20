@@ -1,9 +1,8 @@
 import {CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException} from "@nestjs/common";
 import {PrismaService} from "../../prisma/prisma.service";
-import {TeamRole} from "@prisma/client";
 
 @Injectable()
-export class TeamAdminGuard implements CanActivate{
+export class TeamGuard implements CanActivate{
 
     constructor(private prisma: PrismaService) {
     }
@@ -18,8 +17,7 @@ export class TeamAdminGuard implements CanActivate{
         const membership = await this.prisma.team_membership.findFirst({
             where: {
                 team_id: teamId,
-                user_id: userId,
-                role: TeamRole.admin
+                user_id: userId
             },
             select: {
                 team: true,
