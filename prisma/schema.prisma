@@ -55,6 +55,8 @@ model Team_membership {
   team      Team     @relation(fields: [team_id], references: [id])
   role      TeamRole
   joined_at DateTime @default(now())
+
+  @@unique([team_id, user_id])
 }
 
 model Task {
