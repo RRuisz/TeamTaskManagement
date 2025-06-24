@@ -25,7 +25,7 @@ export class TeamMembershipController {
     @UseGuards(JwtGuard, TeamAdminGuard)
     @Patch(':userId')
     async updateUserRole(@Param('teamId') teamId: string, @Param('userId') userId: string, @Body() body: UserRoleUpdateDto) {
-        this.membershipService.updateUserRole(parseInt(teamId), parseInt(userId), body.role)
+        return this.membershipService.updateUserRole(parseInt(teamId), parseInt(userId), body.role)
     }
 
     @UseGuards(JwtGuard, TeamAdminGuard)

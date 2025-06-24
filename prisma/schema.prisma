@@ -6,7 +6,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["linux-musl-openssl-3.0.x"]
+  binaryTargets = ["linux-musl-openssl-3.0.x", "windows"]
 }
 
 datasource db {
@@ -21,6 +21,7 @@ enum TeamRole {
 }
 
 enum TaskStatus {
+  new
   todo
   in_progress
   done
@@ -62,19 +63,19 @@ model Team_membership {
 }
 
 model Task {
-  id          Int        @id @default(autoincrement())
-  team_id     Int
-  team        Team       @relation(fields: [team_id], references: [id])
-  title       String
-  description String
-  status      TaskStatus
-  due_date    DateTime?
-  assigned_to Int
-  user1       User       @relation(name: "AssignedUser", fields: [assigned_to], references: [id])
-  created_by  Int
-  user2       User       @relation(name: "ReportingUser", fields: [created_by], references: [id])
-  created_at  DateTime   @default(now())
-  Comment     Comment[]
+  id               Int        @id @default(autoincrement())
+  team_id          Int
+  team             Team       @relation(fields: [team_id], references: [id])
+  title            String
+  description      String
+  status           TaskStatus
+  due_date         DateTime?
+  assigned_user_id Int
+  assigned_user    User?      @relation(name: "AssignedUser", fields: [assigned_user_id], references: [id])
+  reported_user_id Int
+  reported_user    User       @relation(name: "ReportingUser", fields: [reported_user_id], references: [id])
+  created_at       DateTime   @default(now())
+  Comment          Comment[]
 }
 
 model Comment {
