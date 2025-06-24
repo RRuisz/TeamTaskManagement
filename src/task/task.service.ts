@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
-import {TaskCreateDto} from "./dto";
-import {TaskStatus} from "@prisma/client";
+import {TaskCreateDto, TaskUpdateDto} from "./dto";
+import {Task, TaskStatus} from "@prisma/client";
 
 @Injectable()
 export class TaskService {
@@ -70,8 +70,15 @@ export class TaskService {
         })
     }
 
-    async updateTask(taskId: number, teamId: number, data: TaskCreateDto) {
+    async updateTask(taskId: number, teamId: number, dto: TaskUpdateDto) {
         await this.verifyTaskIsInTeam(teamId, taskId)
+        const data: Partial<Pick<Task, 'title' | 'description' | 'status' | 'due_date' | 'assigned_user_id'>> = {};
+
+        if (dto.title) data.title = dto.title;
+        if (dto.description) data.description = dto.description;
+        if (dto.status) data.status = dto.status as TaskStatus;
+        if (dto.due_date) data.due_date = dto.due_date;
+        if (dto.assignee_id) data.assigned_user_id = parseInt(dto.assignee_id);
 
         return this.prisma.task.update({
             where: {

@@ -40,6 +40,4 @@ export class TaskController {
         return this.taskService.updateTask(parseInt(taskId), parseInt(teamId), data)
     }
 
-
-
 }
